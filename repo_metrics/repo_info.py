@@ -4,6 +4,8 @@ import pandas as pd
 import numpy as np
 import time
 
+request_count = 0
+
 
 def get_default_branch(repo, token):
     """
@@ -23,7 +25,7 @@ def get_default_branch(repo, token):
         raise Exception(f"Failed to fetch repository info: {response.status_code}, {response.text}")
 
 
-def count_commits_on_branch(repo, token, branch):
+def count_commits_on_branch(repo, branch, token):
     """
     Places a get request and counts the number of commits on the given branch
     :param repo: repo in form user/repo_name
@@ -39,7 +41,9 @@ def count_commits_on_branch(repo, token, branch):
         'sha': branch,
         'per_page': 1
     }
+    global request_count
     response = requests.get(url, headers=headers, params=params)
+    request_count += 1
     if response.status_code == 200:
         commit_count = response.links['last']['url'].split('page=')[-1]
         return int(commit_count)
@@ -54,53 +58,66 @@ def get_repo_info(repo, token):
     :param token: token for API
     :return:
     """
-    name = repo.split("/")[-1]
-    user = repo.split("/")[-2]
-    repo = f"{user}/{name}"
+    global request_count
+    try:
+        name = repo.split("/")[-1]
+        user = repo.split("/")[-2]
+        repo = f"{user}/{name}"
+    except Exception as e:
+        print(repo, str(e))
+        return np.nan, np.nan
 
     try:
-        metadata = count_commits_on_branch(repo, token)
-        default_branch = ""
-        #TODO default_branch = read from metadata
+        metadata = get_repo_metadata(repo, token)
+        default_branch = metadata["default_branch"]
         commit_count = count_commits_on_branch(repo, default_branch, token)
         return commit_count, metadata
     except Exception as e:
         print(repo, str(e))
-        return np.nan
+        request_count += 1
+        return np.nan, np.nan
 
 
 def get_repo_metadata(repo, token):
+    global request_count
+
     url = f"https://api.github.com/repos/{repo}"
     headers = {
         'Authorization': f'token {token}'
     }
     response = requests.get(url, headers=headers)
+    if request_count >= 4900:
+        reset_time = int(response.headers.get('X-RateLimit-Reset', time.time() + 3600)) - time.time()
+        print(f"Rate limit reached. Waiting for {reset_time} seconds.")
+        time.sleep(reset_time + 1)
+        request_count = 0
+
     if response.status_code == 200:
         metadata = response.json()
+        request_count += 1
         return metadata
     else:
+        request_count += 1
         raise Exception(f"Failed to fetch metadata: {response.status_code}, {response.text}")
 
 
 if __name__ == "__main__":
-
-    #while True:
-    #    if request_count >= 4999:
-    #        reset_time = int(response.headers.get('X-RateLimit-Reset', time.time() + 3600)) - time.time()
-    #        print(f"Rate limit reached. Waiting for {reset_time} seconds.")
-    #        time.sleep(reset_time + 1)
-    #        request_count = 0
-#
-    #    response = requests.get(url, headers=headers, params=params)
-    #    request_count += 1
-
-
-    dataset = pd.read_csv("../data/metadata.tsv", sep="\t", low_memory=False)
-    dataset_github = dataset[dataset["source"] == "Github API"]
     token = get_access_token("../")
-    repo_info_df = pd.DataFrame(columns=["commits_n"])
+    url = f"https://api.github.com/repos/ELGarulli/neurokin"
+    headers = {
+        'Authorization': f'token {token}'
+    }
+    response = requests.get(url, headers=headers)
+    reset_time = int(response.headers.get('X-RateLimit-Reset', time.time() + 3600)) - time.time()
 
-    #TODO check how tuple return is handled by apply
-    repo_info_df["commits_n"], repo_info_df["metadata"] = dataset_github["github_repo"].apply(get_repo_info, token=token)
+    dataset = pd.read_csv("../../rs_usage/data/metadata.tsv", sep="\t", low_memory=False)
+    dataset_github = dataset[dataset["source"] == "Github API"]
 
-    repo_info_df.to_csv("./data/commits_n.csv")
+    repo_info_df = pd.DataFrame(columns=["commits_n", "metadata"])
+    idxs = np.linspace(0, len(dataset_github), 10, endpoint=True, dtype=int)
+    idxs = idxs[6:]
+    for i in range(len(idxs)-1):
+        info = dataset_github["github_repo"].iloc[idxs[i]:idxs[i+1]].apply(get_repo_info,
+                                                                       token=token)
+
+        info.to_csv(f"../../rs_usage/info_repos/info_{idxs[i+1]}.csv")
