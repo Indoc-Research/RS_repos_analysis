@@ -4,7 +4,6 @@ import pandas as pd
 import numpy as np
 import time
 
-request_count = 0
 
 
 def get_default_branch(repo, token):
@@ -102,6 +101,8 @@ def get_repo_metadata(repo, token):
 
 
 if __name__ == "__main__":
+
+    request_count = 0
     token = get_access_token("../")
     url = f"https://api.github.com/repos/ELGarulli/neurokin"
     headers = {
@@ -115,7 +116,6 @@ if __name__ == "__main__":
 
     repo_info_df = pd.DataFrame(columns=["commits_n", "metadata"])
     idxs = np.linspace(0, len(dataset_github), 10, endpoint=True, dtype=int)
-    idxs = idxs[6:]
     for i in range(len(idxs)-1):
         info = dataset_github["github_repo"].iloc[idxs[i]:idxs[i+1]].apply(get_repo_info,
                                                                        token=token)

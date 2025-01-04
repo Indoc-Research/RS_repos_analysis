@@ -26,7 +26,7 @@ def str_to_int_or_nan(a):
         return np.nan
 
 
-input_folder = "../../rs_usage/info_repos/"
+input_folder = "../../rs_usage/info_repos/infos/"
 files = [join(input_folder, f) for f in listdir(input_folder) if isfile(join(input_folder, f))]
 files = [f for f in files if f.endswith(".csv")]
 
@@ -42,5 +42,5 @@ for file in files:
     df_list.append(metadata)
 
 metadata_df = pd.concat(df_list)
-metadata_df.to_csv(f"{input_folder}/metadata/metadata.csv")
+metadata_df.to_csv(f"{input_folder}/metadata.csv")
 print()
