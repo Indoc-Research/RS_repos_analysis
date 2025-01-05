@@ -6,7 +6,7 @@ We investigated the common usage of GitHub in the biomedical field. This work is
 
 ### Dataset
 We used the CZ Software Mention dataset [[1]](#1) as a starting point for this analysis.
-We downloaded specifically the linked folder and analysed the "metadata" file, which contains the list of repos urls, 
+We downloaded specifically the linked folder and analysed the "metadata.tsv" file, which contains the list of repos urls, 
 mined from biomedical publications. From the metadata we selected the portion of the dataset that came from GitHub.
 
 ### Metrics
