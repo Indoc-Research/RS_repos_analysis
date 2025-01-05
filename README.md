@@ -22,6 +22,7 @@ The majority of repos became inactive after a few months. Surprisingly we retrie
 "negative lifespans". These rare cases can arise when the repo was forked or cloned so that it inherited 
 the commit history, and was never updated again. So the "last push" results before the creation of the new repo.
 ![alt text](./figures/lifespan_rate.png)
+
 Computing the Empirical Cumulative Distribution Function (ECDF) underlines that about half of the repos
 are inactive after 12 months.
 ![alt text](./figures/ECDF_lifespan.png)
