@@ -58,7 +58,7 @@ a proxy for community interest and could observe a correlation.
 
 ![alt text](./figures/release_count_bar.png)
 ![alt text](./figures/forks_count_bar.png)
-![alt text](./figures/release_forks_scatter.png)
+![alt text](./figures/forks_release.png)
 ![alt text](./figures/forks_stars.png)
 
 

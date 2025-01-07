@@ -78,7 +78,7 @@ if __name__ == "__main__":
     dataset_github = pd.read_csv("../../rs_usage/metadata/metadata.csv", low_memory=False)
 
     idxs = np.linspace(0, len(dataset_github), 10, endpoint=True, dtype=int)
-
+    idxs = idxs[3:]
     for i in range(len(idxs)-1):
         info = dataset_github["url"].iloc[idxs[i]:idxs[i+1]].apply(get_repo_releases_number,
                                                                        token=token)
