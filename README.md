@@ -34,6 +34,12 @@ The vast majority of repos only includes one single commit.
 ![alt text](./figures/commits_on_default_branch.png)
 There is a weak correlation between the lifespan and the number of commits on default branch.
 ![alt text](./figures/lifespan_commits_heatmap.png)
+
+Analysing more in depth the distribution of commits across the year, we can highlight a trend leading to more and
+more repos with very low numbers of commits, without a specific effect by the introduction of the FAIR
+principles.
+![alt text](./figures/KDE_commits_time.png)
+
 **README**
 We classified the README in: none, short (<1500 bytes), detailed (between 1500 and 10000 bytes) 
 and informative (>10000 bytes). And computed the proportion of each in the dataset.
