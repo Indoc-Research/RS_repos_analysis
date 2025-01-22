@@ -17,17 +17,21 @@ on default branch (main, master), README and releases info from each of the avai
 ### Results
 
 **Lifespan**
+
 We analyzed the difference between the date of creation of the repo, and the date of the last update.
 The majority of repos became inactive after a few months. Surprisingly we retrieved few repos with
 "negative lifespans". These rare cases can arise when the repo was forked or cloned so that it inherited 
 the commit history, and was never updated again. So the "last push" results before the creation of the new repo.
+
 ![alt text](./figures/lifespan_rate.png)
 
 Computing the Empirical Cumulative Distribution Function (ECDF) underlines that about half of the repos
 are inactive after 12 months.
+
 ![alt text](./figures/ECDF_lifespan.png)
 
 **Commits** 
+
 We split the commits data between below 95% percentile and above. This is to aid the visualization as the 
 "above" repos (e.g. Linux) strongly skew the representation
 The vast majority of repos only includes one single commit.
@@ -41,6 +45,7 @@ principles.
 ![alt text](./figures/KDE_commits_time.png)
 
 **README**
+
 We classified the README in: none, short (<1500 bytes), detailed (between 1500 and 10000 bytes) 
 and informative (>10000 bytes). And computed the proportion of each in the dataset.
 An important metric in biomedical/research software is the connection between the bare software
@@ -50,11 +55,13 @@ Finally, we displayed the word cloud of the most represented words in the headin
 ![alt text](./figures/README_analysis.png)
 
 **License**
+
 Repositories can have an associated license, which details if and how the code can be used. We investigated
 how many repos include a license, if at all, and what is the proportion of permissive licenses.
 ![alt text](./figures/license.png)
 
 **Releases, Forks and Stars**
+
 Package releases are stable version of package that are published on GitHub. We investigated how many, if at all, 
 releases each repo has and whether this correlates with forks number, as a proxy for the repo
 relevance. Interestingly we did not see a strong correlation between the number of releases and forks. We hypothesize 
@@ -69,13 +76,13 @@ a proxy for community interest and could observe a correlation.
 
 
 ### FAIR principles
-We set to investigate general adherence to the FAIR principles, from the repos in the dataset.
+We set to investigate general adherence to the FAIR principles, from the repos in the dataset. [[3]](#3)
 
 **F**
 
 A global, unique and persistent identifier is achieved, amon others, by either having a GitHub release or a 
-published PyPI package (pip installable). To this end, we computed the percentage of repos that feature in the PyPI
- dataset and the percentage of repos that have at least one release.
+published PyPI package (pip installable). To this end, we computed the percentage of (primarily Python) repos that 
+feature in the PyPI dataset and the percentage of repos that have at least one release.
 
 ![alt text](./figures/pip_v_releases.png)
 
@@ -87,7 +94,7 @@ However, the metadata is not necessarily independent from the software (A2).
 **I**
 
 The interoperability is highly dependednt on the filed the software is developed for, as it should "exchanges data in a 
-way that meets domain-relevant community standards." ![ref]
+way that meets domain-relevant community standards." [[3]](#3)
 
 **R**
 
@@ -105,3 +112,6 @@ literature [Dataset]. Dryad. https://doi.org/10.5061/dryad.6wwpzgn2c
 
 <a id="2">[2]</a> RSE Repository Analysis
 https://github.com/softwaresaved/rse-repo-analysis
+
+<a id="3">[3]</a> FAIR principles
+https://www.nature.com/articles/s41597-022-01710-x

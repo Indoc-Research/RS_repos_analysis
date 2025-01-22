@@ -1,8 +1,9 @@
 import requests
-from utils import get_access_token
 import time
 import pandas as pd
 import numpy as np
+from utils import get_access_token
+from consts import PROCESSED_README_FILES_PATH, PROCESSED_METADATA_PATH
 def get_repo_readme(url, token):
     print(f"processing {url}")
     url = f"{url}/readme"
@@ -30,7 +31,7 @@ def get_repo_readme(url, token):
 if __name__ == "__main__":
 
     request_count = 0
-    token = get_access_token("../")
+    token = get_access_token("./")
     url = f"https://api.github.com/repos/ELGarulli/neurokin"
     headers = {
         'Authorization': f'token {token}'
@@ -38,7 +39,7 @@ if __name__ == "__main__":
     response = requests.get(url, headers=headers)
     reset_time = int(response.headers.get('X-RateLimit-Reset', time.time() + 3600)) - time.time()
 
-    dataset_github = pd.read_csv("../../rs_usage/metadata/metadata.csv", low_memory=False)
+    dataset_github = pd.read_csv(f"{PROCESSED_METADATA_PATH}metadata.csv", low_memory=False)
 
     repo_info_df = pd.DataFrame(columns=["readme"])
     idxs = np.linspace(0, len(dataset_github), 10, endpoint=True, dtype=int)
@@ -46,4 +47,4 @@ if __name__ == "__main__":
     for i in range(len(idxs)-1):
         info = dataset_github["url"].iloc[idxs[i]:idxs[i+1]].apply(get_repo_readme,
                                                                        token=token)
-        info.to_csv(f"../../rs_usage/info_repos/readme_{idxs[i+1]}.csv", escapechar="~")
+        info.to_csv(f"{PROCESSED_README_FILES_PATH}/readme_{idxs[i+1]}.csv", escapechar="~")

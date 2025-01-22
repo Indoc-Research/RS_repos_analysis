@@ -3,25 +3,7 @@ from utils import get_access_token
 import pandas as pd
 import numpy as np
 import time
-
-
-
-def get_default_branch(repo, token):
-    """
-    Places a get request and retrieves the default branch of the repo
-    :param repo: repo in form user/repo_name
-    :param token: token for API
-    :return:
-    """
-    url = f"https://api.github.com/repos/{repo}"
-    headers = {
-        'Authorization': f'token {token}'
-    }
-    response = requests.get(url, headers=headers)
-    if response.status_code == 200:
-        return response.json().get('default_branch')
-    else:
-        raise Exception(f"Failed to fetch repository info: {response.status_code}, {response.text}")
+from consts import RAW_DATASET_PATH, PROCESSED_METADATA_FILES_PATH
 
 
 def count_commits_on_branch(repo, branch, token):
@@ -48,6 +30,35 @@ def count_commits_on_branch(repo, branch, token):
         return int(commit_count)
     else:
         raise Exception(f"Failed to fetch commits: {response.status_code}, {response.text}")
+
+
+def get_repo_metadata(repo, token):
+    """
+    Fetches the metadata of the repo
+    :param repo:
+    :param token:
+    :return:
+    """
+    global request_count
+
+    url = f"https://api.github.com/repos/{repo}"
+    headers = {
+        'Authorization': f'token {token}'
+    }
+    response = requests.get(url, headers=headers)
+    if request_count >= 4900:
+        reset_time = int(response.headers.get('X-RateLimit-Reset', time.time() + 3600)) - time.time()
+        print(f"Rate limit reached. Waiting for {reset_time} seconds.")
+        time.sleep(reset_time + 1)
+        request_count = 0
+
+    if response.status_code == 200:
+        metadata = response.json()
+        request_count += 1
+        return metadata
+    else:
+        request_count += 1
+        raise Exception(f"Failed to fetch metadata: {response.status_code}, {response.text}")
 
 
 def get_repo_info(repo, token):
@@ -77,41 +88,21 @@ def get_repo_info(repo, token):
         return np.nan, np.nan
 
 
-def get_repo_metadata(repo, token):
-    global request_count
-
-    url = f"https://api.github.com/repos/{repo}"
-    headers = {
-        'Authorization': f'token {token}'
-    }
-    response = requests.get(url, headers=headers)
-    if request_count >= 4900:
-        reset_time = int(response.headers.get('X-RateLimit-Reset', time.time() + 3600)) - time.time()
-        print(f"Rate limit reached. Waiting for {reset_time} seconds.")
-        time.sleep(reset_time + 1)
-        request_count = 0
-
-    if response.status_code == 200:
-        metadata = response.json()
-        request_count += 1
-        return metadata
-    else:
-        request_count += 1
-        raise Exception(f"Failed to fetch metadata: {response.status_code}, {response.text}")
 
 
 if __name__ == "__main__":
 
     request_count = 0
-    token = get_access_token("../")
-    url = f"https://api.github.com/repos/ELGarulli/neurokin"
+    token = get_access_token("./")
+
+    url = f"https://api.github.com/repos/ELGarulli/neurokin" # Use a dummy repo, to fetch the initial request count
     headers = {
         'Authorization': f'token {token}'
     }
     response = requests.get(url, headers=headers)
     reset_time = int(response.headers.get('X-RateLimit-Reset', time.time() + 3600)) - time.time()
 
-    dataset = pd.read_csv("../../rs_usage/data/metadata.tsv", sep="\t", low_memory=False)
+    dataset = pd.read_csv(f"{RAW_DATASET_PATH}metadata.tsv", sep="\t", low_memory=False)
     dataset_github = dataset[dataset["source"] == "Github API"]
 
     repo_info_df = pd.DataFrame(columns=["commits_n", "metadata"])
@@ -120,4 +111,4 @@ if __name__ == "__main__":
         info = dataset_github["github_repo"].iloc[idxs[i]:idxs[i+1]].apply(get_repo_info,
                                                                        token=token)
 
-        info.to_csv(f"../../rs_usage/info_repos/info_{idxs[i+1]}.csv")
+        info.to_csv(f"{PROCESSED_METADATA_FILES_PATH}/info_{idxs[i + 1]}.csv")
