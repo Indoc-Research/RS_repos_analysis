@@ -12,7 +12,7 @@ mined from biomedical publications. From the metadata we selected the portion of
 ### Metrics
 
 We downloaded generic metadata (e.g. license type, creation and update time), number of commits
-on default branch (main, master), README and releases info from each of the available repos.
+on default branch (e.g. main or master), README data and releases number from each of the available repos.
 
 ### Results
 
@@ -34,7 +34,7 @@ are inactive after 12 months.
 
 We split the commits data between below 95% percentile and above. This is to aid the visualization as the 
 "above" repos (e.g. Linux) strongly skew the representation
-The vast majority of repos only includes one single commit.
+The vast majority of repos only includes less than 10 commits, 11% of the repos have only 1 commit.
 ![alt text](./figures/commits_on_default_branch.png)
 There is a weak correlation between the lifespan and the number of commits on default branch.
 ![alt text](./figures/lifespan_commits_heatmap.png)
@@ -46,12 +46,11 @@ principles.
 
 **README**
 
-We classified the README in: none, short (<1500 bytes), detailed (between 1500 and 10000 bytes) 
-and informative (>10000 bytes). And computed the proportion of each in the dataset.
+We classified the README in: none, short (<250 words), intermediate (between 250 and 2500 words) 
+and lengthy (>2500 words). And computed the proportion of each in the dataset.
 An important metric in biomedical/research software is the connection between the bare software
 and the original publication. To gain insights on this relation, we computed the proportion of 
 repos that mention a DOI in the README
-Finally, we displayed the word cloud of the most represented words in the headings.
 ![alt text](./figures/README_analysis.png)
 
 **License**
@@ -81,24 +80,25 @@ We set to investigate general adherence to the FAIR principles, from the repos i
 **F**
 
 A global, unique and persistent identifier is achieved, amon others, by either having a GitHub release or a 
-published PyPI package (pip installable). To this end, we computed the percentage of (primarily Python) repos that 
-feature in the PyPI dataset and the percentage of repos that have at least one release.
+published PyPI package (pip installable). We computed the percentage of repos that have Python listed as the main
+language and that feature in the PyPI dataset. 
+And we computed the percentage of repos that have at least one GitHub release.
 
 ![alt text](./figures/pip_v_releases.png)
 
 **A**
 
 The software can always be downloaded from GitHub using https thus granting adherence to A1. 
-However, the metadata is not necessarily independent from the software (A2).
+However, the metadata is not necessarily independent of the software (A2).
 
 **I**
 
-The interoperability is highly dependednt on the filed the software is developed for, as it should "exchanges data in a 
+The interoperability is highly dependent on the filed the software is developed for, as it should "exchanges data in a 
 way that meets domain-relevant community standards." [[3]](#3)
 
 **R**
 
-The sofware should be usable and reusable. To investigate this point, we computed the percentage of repos, with a 
+The software should be usable and reusable. To investigate this point, we computed the percentage of repos, with a 
 permissive licence.
 
 ![alt text](./figures/license_pie.png)
